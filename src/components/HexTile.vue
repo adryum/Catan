@@ -5,7 +5,6 @@ import { onMounted, ref, useCssModule, type Ref } from 'vue';
 
 const props = defineProps<{
     hexTile: Hex,
-    pointInfo: TilePointInfo[]
 }>();
 
 const hex = ref<HTMLDivElement>()
@@ -38,8 +37,11 @@ function setPointCoords(refElement: Ref<HTMLDivElement | undefined, HTMLDivEleme
     const rect = refElement.value.getBoundingClientRect();
 
     let coords = hex.getRelativePointCoords(point)
-    refElement.value.style.top = `${coords.y - rect.height / 2}px`
-    refElement.value.style.left = `${coords.x - rect.width / 2}px`
+    refElement.value.style.top = `${coords.y}px`
+    refElement.value.style.left = `${coords.x}px`
+
+    // centers point by 50% of size
+    refElement.value.style.transform = `translateX(-50%) translateY(-50%)`
 
     // console.log(point.toString());
     console.log(coords);
@@ -51,50 +53,74 @@ const s = useCssModule()
 
 <template>
 <div ref="hex" :class='s.container'>
- <div ref="topPoint" :class="s.point"></div>
+ <div ref="topPoint" :class="[s.topPoint ]">
+    <img :src="hexTile.pointInfo.get(HexPoint.Top)?.getPieceImage()" alt="tile">
+ </div>
 
- <div id="wallTopLeft" v-if="pointInfo.isSideConnected(HexSide.TopLeft)"></div>
- <div id="wallTopRight" v-if="pointInfo.isSideConnected(HexSide.TopRight)"></div>
- <div id="wallRight" v-if="pointInfo.isSideConnected(HexSide.Right)"></div>
- <div id="wallLeft" v-if="pointInfo.isSideConnected(HexSide.Left)"></div>
- <div id="wallBottomLeft" v-if="pointInfo.isSideConnected(HexSide.BottomLeft)"></div>
- <div id="wallBottomRight" v-if="pointInfo.isSideConnected(HexSide.BottomRight)"></div>
+ <div id="wallTopLeft" v-if="hexTile.pointInfo.isSideConnected(HexSide.TopLeft)"></div>
+ <div id="wallTopRight" v-if="hexTile.pointInfo.isSideConnected(HexSide.TopRight)"></div>
+ <div id="wallRight" v-if="hexTile.pointInfo.isSideConnected(HexSide.Right)"></div>
+ <div id="wallLeft" v-if="hexTile.pointInfo.isSideConnected(HexSide.Left)"></div>
+ <div id="wallBottomLeft" v-if="hexTile.pointInfo.isSideConnected(HexSide.BottomLeft)"></div>
+ <div id="wallBottomRight" v-if="hexTile.pointInfo.isSideConnected(HexSide.BottomRight)"></div>
  
- <div ref="topRightPoint" :class="s.point"></div>
- <div ref="topLeftPoint" :class="s.point"></div>
- <div ref="bottomPoint" :class="s.point"></div>
- <div ref="bottomRightPoint" :class="s.point"></div>
- <div ref="bottomLeftPoint" :class="s.point"></div>
+ <div ref="topRightPoint" :class="s.point">
+    <img :src="hexTile.pointInfo.get(HexPoint.TopRight)?.getPieceImage()" alt="tile">
+ </div>
+ <div ref="topLeftPoint" :class="s.point">
+    <img :src="hexTile.pointInfo.get(HexPoint.TopLeft)?.getPieceImage()" alt="tile">
+ </div>
+ <div ref="bottomPoint" :class="s.point">
+    <img :src="hexTile.pointInfo.get(HexPoint.Bottom)?.getPieceImage()" alt="tile">
+ </div>
+ <div ref="bottomRightPoint" :class="s.point">
+    <img :src="hexTile.pointInfo.get(HexPoint.BottomRight)?.getPieceImage()" alt="tile">
+ </div>
+ <div ref="bottomLeftPoint" :class="s.point">
+    <img :src="hexTile.pointInfo.get(HexPoint.BottomLeft)?.getPieceImage()" alt="tile">
+ </div>
 
  <div id="tile" :class="s.tile">
-    <img src="/src/assets/images/tileMesa.png" alt="tile">
+    <img src="/src/assets/images/tileMesa.svg" alt="tile">
  </div>
+ <!-- <div :class="s.info">{{ hexTile.keyInGrid }}</div> -->
 </div>
 </template>
 
 <style module lang='sass'>
 @use '@/assets/main.sass' as main
+img
+    width: 100%
+    height: 100%
 .container
-    position: relative
-    width: 500px
-    height: 500px
+    position: absolute
+ 
+
+    &:hover
+     
+        transition: .3s
+
+    .info
+        position: absolute
+        z-index: 10
+        font-size: 20px
 
     .tile
-        width: 500px
-        height: 500px
+        width: 100%
+        height: 100%
 
-        img
-            width: 100%
-            height: 100%
-          
+    .topPoint
+        position: absolute
+        width: 48px
+        height: 48px
+        opacity: 1
+        z-index: -1
 
     .point
         position: absolute
-        width: 100px
-        height: 100px
-        z-index: 2
-        background: red
-
-
-    
+        width: 48px
+        height: 48px
+        
+        // background: red
+        opacity: 1
 </style>

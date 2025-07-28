@@ -30,3 +30,33 @@ Array.prototype.isSideConnected = function (side: HexSide): boolean {
             return false
     }
 };
+
+declare global {
+    interface Map<K, V> {
+        isSideConnected(this: Map<HexPoint, TilePointInfo>, side: HexSide): boolean;
+    }
+}
+
+Map.prototype.isSideConnected = function (side: HexSide): boolean {
+    // `this` is the array of MyClass
+    switch (side) {
+        case HexSide.Right:
+            return this.get(HexPoint.TopRight)!.isPlaced()
+            && this.get(HexPoint.BottomRight)!.isPlaced()
+        case HexSide.BottomRight:
+            return this.get(HexPoint.Bottom)!.isPlaced() 
+            && this.get(HexPoint.BottomRight)!.isPlaced()
+        case HexSide.BottomLeft:
+            return this.get(HexPoint.Bottom)!.isPlaced() 
+            && this.get(HexPoint.BottomLeft)!.isPlaced()
+        case HexSide.Left:
+            return this.get(HexPoint.BottomLeft)!.isPlaced() 
+            && this.get(HexPoint.TopLeft)!.isPlaced()
+        case HexSide.TopLeft:
+            return this.get(HexPoint.TopLeft)!.isPlaced() 
+            && this.get(HexPoint.Top)!.isPlaced()
+        default:
+            // mby throw an error..
+            return false
+    }
+};

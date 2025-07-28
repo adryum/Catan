@@ -3,21 +3,27 @@ import { useCssModule } from 'vue';
 import HexTile from './HexTile.vue'
 import { Hex } from '@/logic/Hex';
 
+
+
 const s = useCssModule()
 </script>
 
 <template>
 <div :class='s.container'>
-    <HexTile :point-info="[]" :hex-tile="new Hex()"/>
-    <HexTile :point-info="[]" :hex-tile="new Hex()"/>
+    <slot>
+
+    </slot>
 </div>
 </template>
 
 <style module lang='sass'>
 @use '@/assets/main.sass' as main
 .container
-    width: 900px
-    height: 800px
+    position: relative
+    width: 500px
+    height: 500px
+    
+  
     background: gray
 
     // .pointTop
