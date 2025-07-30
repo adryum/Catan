@@ -15,6 +15,13 @@ const bottomPoint = ref<HTMLDivElement>()
 const bottomRightPoint = ref<HTMLDivElement>()
 const bottomLeftPoint = ref<HTMLDivElement>()
 
+const sideTopRight = ref<HTMLDivElement>()
+const sideRight = ref<HTMLDivElement>()
+const sideBottomRight = ref<HTMLDivElement>()
+const sideBottomLeft = ref<HTMLDivElement>()
+const sideLeft = ref<HTMLDivElement>()
+const sideTopLeft = ref<HTMLDivElement>()
+
 onMounted(() => {
     if (!hex.value) return;
 
@@ -22,13 +29,19 @@ onMounted(() => {
     console.log(hex.value);
     console.log(props.hexTile.parentElement);
     
-
     setPointCoords(topPoint, HexPoint.Top, props.hexTile)
     setPointCoords(topRightPoint, HexPoint.TopRight, props.hexTile)
     setPointCoords(topLeftPoint, HexPoint.TopLeft, props.hexTile)
     setPointCoords(bottomPoint, HexPoint.Bottom, props.hexTile)
     setPointCoords(bottomRightPoint, HexPoint.BottomRight, props.hexTile)
     setPointCoords(bottomLeftPoint, HexPoint.BottomLeft, props.hexTile)
+
+    setSideCoords(sideTopRight, HexSide.TopRight, props.hexTile)
+    setSideCoords(sideRight, HexSide.Right, props.hexTile)
+    setSideCoords(sideBottomRight, HexSide.BottomRight, props.hexTile)
+    setSideCoords(sideBottomLeft, HexSide.BottomLeft, props.hexTile)
+    setSideCoords(sideLeft, HexSide.Left, props.hexTile)
+    setSideCoords(sideTopLeft, HexSide.TopLeft, props.hexTile)
 })
 
 function setPointCoords(refElement: Ref<HTMLDivElement | undefined, HTMLDivElement | undefined>, point: HexPoint, hex: Hex) {
@@ -48,6 +61,22 @@ function setPointCoords(refElement: Ref<HTMLDivElement | undefined, HTMLDivEleme
     
 }
 
+function setSideCoords(refElement: Ref<HTMLDivElement | undefined, HTMLDivElement | undefined>, side: HexSide, hex: Hex) {
+    if (!refElement.value) return;
+
+    const rect = refElement.value.getBoundingClientRect();
+
+    let coords = hex.getRelativeSideCoords(side)
+    refElement.value.style.top = `${coords.y}px`
+    refElement.value.style.left = `${coords.x}px`
+
+    // centers point by 50% of size
+    refElement.value.style.transform = `translateX(-50%) translateY(-50%)`
+
+    // console.log(point.toString());
+    console.log(coords);
+}
+
 const s = useCssModule()
 </script>
 
@@ -57,12 +86,24 @@ const s = useCssModule()
     <img :src="hexTile.pointInfo.get(HexPoint.Top)?.getPieceImage()" alt="tile">
  </div>
 
- <div id="wallTopLeft" v-if="hexTile.pointInfo.isSideConnected(HexSide.TopLeft)"></div>
- <div id="wallTopRight" v-if="hexTile.pointInfo.isSideConnected(HexSide.TopRight)"></div>
- <div id="wallRight" v-if="hexTile.pointInfo.isSideConnected(HexSide.Right)"></div>
- <div id="wallLeft" v-if="hexTile.pointInfo.isSideConnected(HexSide.Left)"></div>
- <div id="wallBottomLeft" v-if="hexTile.pointInfo.isSideConnected(HexSide.BottomLeft)"></div>
- <div id="wallBottomRight" v-if="hexTile.pointInfo.isSideConnected(HexSide.BottomRight)"></div>
+ <div ref="sideTopLeft" :class="s.wallTop" v-if="hexTile.pointInfo.isSideConnected(HexSide.TopLeft)">
+    <img src="/src/assets/images/wallRightBottom.svg" alt="tile">
+ </div>
+ <div ref="sideTopRight" :class="s.wallTop" v-if="hexTile.pointInfo.isSideConnected(HexSide.TopRight)">
+    <img src="/src/assets/images/wallLeftBottom.svg" alt="tile">
+ </div>
+ <div ref="sideRight" :class="s.wall" v-if="hexTile.pointInfo.isSideConnected(HexSide.Right)">
+    <img src="/src/assets/images/wallVertical.svg" alt="tile">
+ </div>
+ <div ref="sideLeft" :class="s.wall" v-if="hexTile.pointInfo.isSideConnected(HexSide.Left)">
+    <img src="/src/assets/images/wallVertical.svg" alt="tile">
+ </div>
+ <div ref="sideBottomLeft" :class="s.wall" v-if="hexTile.pointInfo.isSideConnected(HexSide.BottomLeft)">
+    <img src="/src/assets/images/wallLeftBottom.svg" alt="tile">
+ </div>
+ <div ref="sideBottomRight" :class="s.wall" v-if="hexTile.pointInfo.isSideConnected(HexSide.BottomRight)">
+    <img src="/src/assets/images/wallRightBottom.svg" alt="tile">
+ </div>
  
  <div ref="topRightPoint" :class="s.point">
     <img :src="hexTile.pointInfo.get(HexPoint.TopRight)?.getPieceImage()" alt="tile">
@@ -94,7 +135,18 @@ img
     height: 100%
 .container
     position: absolute
+    z-index: 1
  
+    .wall
+        position: absolute
+        width: 80px
+        height: 80px
+
+    .wallTop
+        position: absolute
+        width: 80px
+        height: 80px
+        z-index: -2
 
     &:hover
      
@@ -108,6 +160,7 @@ img
     .tile
         width: 100%
         height: 100%
+
 
     .topPoint
         position: absolute

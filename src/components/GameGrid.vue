@@ -20,8 +20,11 @@ const s = useCssModule()
 @use '@/assets/main.sass' as main
 .container
     position: relative
+    top: 100xp
     width: 500px
     height: 500px
+    // left: 100px
+    // top: 100px
     
   
     background: gray

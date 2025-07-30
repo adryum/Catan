@@ -43,18 +43,26 @@ Map.prototype.isSideConnected = function (side: HexSide): boolean {
         case HexSide.Right:
             return this.get(HexPoint.TopRight)!.isPlaced()
             && this.get(HexPoint.BottomRight)!.isPlaced()
+
         case HexSide.BottomRight:
             return this.get(HexPoint.Bottom)!.isPlaced() 
             && this.get(HexPoint.BottomRight)!.isPlaced()
+
         case HexSide.BottomLeft:
             return this.get(HexPoint.Bottom)!.isPlaced() 
             && this.get(HexPoint.BottomLeft)!.isPlaced()
         case HexSide.Left:
             return this.get(HexPoint.BottomLeft)!.isPlaced() 
             && this.get(HexPoint.TopLeft)!.isPlaced()
+
         case HexSide.TopLeft:
             return this.get(HexPoint.TopLeft)!.isPlaced() 
             && this.get(HexPoint.Top)!.isPlaced()
+
+        case HexSide.TopRight:
+            return this.get(HexPoint.Top)!.isPlaced() 
+            && this.get(HexPoint.TopRight)!.isPlaced()
+            
         default:
             // mby throw an error..
             return false

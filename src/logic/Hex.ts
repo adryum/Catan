@@ -48,34 +48,35 @@ export class Hex {
         this.parentElement = element
         // this.outerRadiuss = rect.width / 2
         this.innerRadiuss = this.outerRadiuss * Math.sqrt(3) / 2
+        this.setPosition()
         this.center = {
             y: rect.realTop + this.outerRadiuss, 
             x: rect.left + this.outerRadiuss
         }
 
-        this.setPosition()
     }
 
     getSidesCenter(side: HexSide): TwoDCoords {
         var angle_deg = 60 * side
         var angle_rad = Math.PI / 180 * angle_deg
         return { 
-            x: this.center.x + this.innerRadiuss * Math.cos(angle_rad), 
-            y: this.center.y + this.innerRadiuss * Math.sin(angle_rad)
+            x: this.center.x + this.innerRadiuss * Math.cos(angle_rad) * 1.05 ,
+            y: this.center.y + this.innerRadiuss * Math.sin(angle_rad) * 0.95
         }
     }
 
-    getPointCoords(point: HexPoint): TwoDCoords {
-        // start = 90deg ; topRight = 30deg
-        var angle_deg = 90 - 60 * point
-        var angle_rad = Math.PI / 180 * angle_deg
-        return { 
-            x: this.center.x + this.outerRadiuss * Math.cos(angle_rad), 
-            y: this.center.y + this.outerRadiuss * Math.sin(angle_rad)
+    getAbsolutePointCoords(point: HexPoint): TwoDCoords {
+        const relativeCoords = this.getRelativePointCoords(point)
+        const rect = this.parentElement.getBoundingClientRect();
+        console.log('relacoords' ,relativeCoords);
+        
+        return {
+            x: rect.left + relativeCoords.x,
+            y: rect.realTop + relativeCoords.y
         }
     }
 
-    getRelativePointCoords(point: HexPoint): TwoDCoords {
+    getRelativePointCoords(point: number): TwoDCoords {
         if (!this.parentElement) {
             console.error("No parrent element for HEx!!!");
         }
@@ -85,9 +86,27 @@ export class Hex {
         // start = 90deg ; topRight = 30deg
         var angle_deg = -90 + 60 * point
         var angle_rad = Math.PI / 180 * angle_deg
-        return { 
-            x: (rect.width / 2) + this.outerRadiuss  * Math.cos(angle_rad) * 1.15, 
+
+        const coords = { 
+            x: (rect.width / 2) + this.outerRadiuss * Math.cos(angle_rad) * 1.15, 
             y: (rect.height / 2) + this.outerRadiuss * Math.sin(angle_rad)
+        }
+
+        return coords
+    }
+
+    getRelativeSideCoords(side: HexSide): TwoDCoords {
+        if (!this.parentElement) {
+            console.error("No parrent element for HEx!!!");
+        }
+        
+        const rect = this.parentElement.getBoundingClientRect();
+
+        var angle_deg = 60 * side
+        var angle_rad = Math.PI / 180 * angle_deg
+        return { 
+            x: (rect.width / 2) + this.innerRadiuss * Math.cos(angle_rad) * 1.15 ,
+            y: (rect.height / 2) + this.innerRadiuss * Math.sin(angle_rad) 
         }
     }
 }
@@ -96,6 +115,14 @@ export interface TwoDCoords {
     x: number,
     y: number
 } 
+
+export function isSamePoint(point1: TwoDCoords, point2: TwoDCoords) {
+    return point1.x === point2.x && point1.y === point2.y
+}
+
+export function containsPoint(arr: TwoDCoords[], point: TwoDCoords): boolean {
+  return arr.some(p => isSamePoint(p, point));
+}
 
 export enum HexPoint {
     Top = 0,
