@@ -1,17 +1,19 @@
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 import { Hex, HexPoint, isSamePoint, type TwoDCoords } from "./Hex";
 import { getLineAndCharacterOfPosition } from "typescript";
 import { getDistance } from "./Utils";
+import { GamePiece } from "./TilePointInfo";
 
 export class TwoDGrid {
     size: TwoDCoords;
     tileSize: number;
     tiles!: Hex[][];
-    interactableGridPoint!: PointGroup[]
+    interactableGridPoint!: Ref<PointGroup[]>
 
     constructor(size: TwoDCoords, tileSize: number) {
         this.size = size
         this.tileSize = tileSize
+        this.interactableGridPoint = ref([])
         this.generate2DTileArray();
     }
 
@@ -29,7 +31,7 @@ export class TwoDGrid {
 
     generateInteractablePointsCoords() {
         // points above ui that can be clicked
-        this.interactableGridPoint = []
+        this.interactableGridPoint.value = []
 
         this.tiles.forEach(row => {
             row.forEach(hex => {
@@ -41,24 +43,32 @@ export class TwoDGrid {
                         point: enumPoint
                     }
 
-                    addPointToGridArray(this.interactableGridPoint, connection)
+                    addPointToGridArray(this.interactableGridPoint.value, connection)
                 }
             });
         })
     }
 }
 
-interface HexConnectionPoint {
+export interface HexConnectionPoint {
     hex: Hex,
     point: HexPoint,
     coords: TwoDCoords
 }
 
-class PointGroup {
+export class PointGroup {
     points: HexConnectionPoint[] = []
     relativeCoords: TwoDCoords
 
     maximumDistance = 1
+
+    setPointPiece(piece: GamePiece) {
+        console.log(this.points);
+        
+        this.points.forEach(point => {
+            point.hex.setPointInfo(point.point, piece)
+        });
+    }
 
     addPoint(point: HexConnectionPoint) {
         this.points.push(point)

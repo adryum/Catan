@@ -8,7 +8,7 @@ export class TilePointInfo {
     constructor(point: HexPoint, team: PlayerTeam = PlayerTeam.None, piece: GamePiece = GamePiece.None) {
         this.team = team;
         this.point = point;
-        this.piece = GamePiece.Tower;
+        this.piece = piece;
     }
 
     isPlaced() {

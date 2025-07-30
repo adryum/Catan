@@ -1,4 +1,5 @@
-import { TilePointInfo } from "./TilePointInfo";
+import { reactive, ref, type Reactive, type Ref } from "vue";
+import { GamePiece, PlayerTeam, TilePointInfo } from "./TilePointInfo";
 
 export class Hex {
     keyInGrid: TwoDCoords;
@@ -8,20 +9,27 @@ export class Hex {
     center!: TwoDCoords;
 
     parentElement!: HTMLDivElement
-    pointInfo: Map<HexPoint, TilePointInfo>
+    pointInfo: Reactive<Map<HexPoint, TilePointInfo>>
 
     constructor(key: TwoDCoords, pixelSize: number) {
         this.keyInGrid = key
         this.outerRadiuss = pixelSize / 2
 
-        this.pointInfo = new Map([
+        this.pointInfo = reactive(new Map([
             [HexPoint.Top, new TilePointInfo(HexPoint.Top)],
             [HexPoint.TopRight, new TilePointInfo(HexPoint.TopRight)],
             [HexPoint.TopLeft, new TilePointInfo(HexPoint.TopLeft)],
             [HexPoint.Bottom, new TilePointInfo(HexPoint.Bottom)],
             [HexPoint.BottomRight, new TilePointInfo(HexPoint.BottomRight)],
             [HexPoint.BottomLeft, new TilePointInfo(HexPoint.BottomLeft)]
-        ]) 
+        ]))
+    }
+
+    setPointInfo(point: HexPoint, piece: GamePiece) {
+     
+        this.pointInfo.set(point, new TilePointInfo(point, PlayerTeam.Blue, piece))
+
+        console.log(this.pointInfo.get(point));
     }
 
     setPosition() {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Hex, HexPoint, HexSide } from '@/logic/Hex';
 import type { TilePointInfo } from '@/logic/TilePointInfo';
-import { onMounted, ref, useCssModule, type Ref } from 'vue';
+import { computed, onMounted, ref, useCssModule, type Ref } from 'vue';
 
 const props = defineProps<{
     hexTile: Hex,
@@ -77,48 +77,71 @@ function setSideCoords(refElement: Ref<HTMLDivElement | undefined, HTMLDivElemen
     console.log(coords);
 }
 
+const topImage = computed(() => {
+  return props.hexTile.pointInfo.get(HexPoint.Top)?.getPieceImage()
+});
+
+const topRightImage = computed(() => {
+  return props.hexTile.pointInfo.get(HexPoint.TopRight)?.getPieceImage();
+});
+const topLeftImage = computed(() => {
+    console.log('computed!!!');
+  return props.hexTile.pointInfo.get(HexPoint.TopLeft)?.getPieceImage();
+});
+const bottomImage = computed(() => {
+  return props.hexTile.pointInfo.get(HexPoint.Bottom)?.getPieceImage();
+});
+const bottomRightImage = computed(() => {
+  return props.hexTile.pointInfo.get(HexPoint.BottomRight)?.getPieceImage();
+});
+const bottomLeftImage = computed(() => {
+  return props.hexTile.pointInfo.get(HexPoint.BottomLeft)?.getPieceImage()
+});
+
+
+
 const s = useCssModule()
 </script>
 
 <template>
 <div ref="hex" :class='s.container'>
- <div ref="topPoint" :class="[s.topPoint ]">
-    <img :src="hexTile.pointInfo.get(HexPoint.Top)?.getPieceImage()" alt="tile">
- </div>
-
- <div ref="sideTopLeft" :class="s.wallTop" v-if="hexTile.pointInfo.isSideConnected(HexSide.TopLeft)">
-    <img src="/src/assets/images/wallRightBottom.svg" alt="tile">
- </div>
- <div ref="sideTopRight" :class="s.wallTop" v-if="hexTile.pointInfo.isSideConnected(HexSide.TopRight)">
-    <img src="/src/assets/images/wallLeftBottom.svg" alt="tile">
- </div>
- <div ref="sideRight" :class="s.wall" v-if="hexTile.pointInfo.isSideConnected(HexSide.Right)">
-    <img src="/src/assets/images/wallVertical.svg" alt="tile">
- </div>
- <div ref="sideLeft" :class="s.wall" v-if="hexTile.pointInfo.isSideConnected(HexSide.Left)">
-    <img src="/src/assets/images/wallVertical.svg" alt="tile">
- </div>
- <div ref="sideBottomLeft" :class="s.wall" v-if="hexTile.pointInfo.isSideConnected(HexSide.BottomLeft)">
-    <img src="/src/assets/images/wallLeftBottom.svg" alt="tile">
- </div>
- <div ref="sideBottomRight" :class="s.wall" v-if="hexTile.pointInfo.isSideConnected(HexSide.BottomRight)">
-    <img src="/src/assets/images/wallRightBottom.svg" alt="tile">
- </div>
  
- <div ref="topRightPoint" :class="s.point">
-    <img :src="hexTile.pointInfo.get(HexPoint.TopRight)?.getPieceImage()" alt="tile">
+
+ <div ref="sideTopLeft" :class="s.wallTop">
+    <img v-if="hexTile.pointInfo.isSideConnected(HexSide.TopLeft)" src="/src/assets/images/wallRightBottom.svg" alt="tile">
  </div>
- <div ref="topLeftPoint" :class="s.point">
-    <img :src="hexTile.pointInfo.get(HexPoint.TopLeft)?.getPieceImage()" alt="tile">
+ <div ref="sideTopRight" :class="s.wallTop" >
+    <img v-if="hexTile.pointInfo.isSideConnected(HexSide.TopRight)" src="/src/assets/images/wallLeftBottom.svg" alt="tile">
+ </div>
+ <div ref="sideRight" :class="s.wall" >
+    <img v-if="hexTile.pointInfo.isSideConnected(HexSide.Right)" src="/src/assets/images/wallVertical.svg" alt="tile">
+ </div>
+ <div ref="sideLeft" :class="s.wall" >
+    <img v-if="hexTile.pointInfo.isSideConnected(HexSide.Left)" src="/src/assets/images/wallVertical.svg" alt="tile">
+ </div>
+ <div ref="sideBottomLeft" :class="s.wall" >
+    <img v-if="hexTile.pointInfo.isSideConnected(HexSide.BottomLeft)" src="/src/assets/images/wallLeftBottom.svg" alt="tile">
+ </div>
+ <div ref="sideBottomRight" :class="s.wall" >
+    <img v-if="hexTile.pointInfo.isSideConnected(HexSide.BottomRight)" src="/src/assets/images/wallRightBottom.svg" alt="tile">
+ </div>
+ <div ref="topPoint" :class="[s.topPoint ]">
+    <img :src="topImage" alt="tile">
+ </div>
+ <div ref="topRightPoint" :class="s.point">
+    <img :src="topRightImage" alt="tile">
+ </div>
+ <div v-if="!topLeftImage" ref="topLeftPoint" :class="s.point">
+    <img :src="topLeftImage" alt="tile">
  </div>
  <div ref="bottomPoint" :class="s.point">
-    <img :src="hexTile.pointInfo.get(HexPoint.Bottom)?.getPieceImage()" alt="tile">
+    <img :src="bottomImage" alt="tile">
  </div>
  <div ref="bottomRightPoint" :class="s.point">
-    <img :src="hexTile.pointInfo.get(HexPoint.BottomRight)?.getPieceImage()" alt="tile">
+    <img :src="bottomRightImage" alt="tile">
  </div>
  <div ref="bottomLeftPoint" :class="s.point">
-    <img :src="hexTile.pointInfo.get(HexPoint.BottomLeft)?.getPieceImage()" alt="tile">
+    <img :src="bottomLeftImage" alt="tile">
  </div>
 
  <div id="tile" :class="s.tile">
