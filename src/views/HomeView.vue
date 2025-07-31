@@ -2,6 +2,7 @@
 import GameGrid from '@/components/GameGrid.vue'
 import HexTile from '@/components/HexTile.vue';
 import InteractionPoint from '@/components/InteractionPoint.vue';
+import InteractionSide from '@/components/InteractionSide.vue';
 import { Hex } from '@/logic/Hex';
 import { TwoDGrid } from '@/logic/TwoDGrid';
 import { createCssClass } from '@/logic/Utils';
@@ -13,45 +14,19 @@ const div = ref<HTMLDivElement>()
 
 function createPointCubes() {
     grid.generateInteractablePointsCoords()
-
-    // console.table(grid.interactableGridPoint);
-
-    // const vnodes = grid.interactableGridPoint.map(group =>
-    //     h(InteractionPoint, { group })
-    // );
-
-    // const wrapper = h('div', {}, vnodes);
-
-    // render(wrapper, div.value!);
-
-
-    // grid.interactableGridPoint.forEach(group => {
-    //      var elClass = createCssClass(`
-    //         position: absolute;
-    //         top: ${group.relativeCoords.y}px;
-    //         left: ${group.relativeCoords.x}px;
-
-    //         background: red;
-    //         width: 48px;
-    //         height: 48px;
-    //         z-index: 10;
-
-    //     `)
-    //     var child = document.createElement('div')
-    //     child.classList.add(elClass)
-    //     div.value?.appendChild(child)
-    // })
-
-    
+}
+function createSideCubes() {
+    grid.generateInteractableSideCoords()
 }
 
 </script>
 
 <template>
-  <main>
+  <main class="container">
     <GameGrid ref="gameGrid">
         <div ref="div" class="interactionGrid">
             <InteractionPoint v-for="group in grid.interactableGridPoint.value" :group="group" />
+            <InteractionSide v-for="group in grid.interactableGridSides.value" :group="group" />
         </div>
         <div v-for="row in grid.tiles">
             <HexTile v-for="tile in row" :point-info="[]" :hex-tile="tile"/>
@@ -60,10 +35,14 @@ function createPointCubes() {
     
     </GameGrid>
     <button class="button" @click="createPointCubes"></button>
+    <button class="button" @click="createSideCubes"></button>
   </main>
 </template>
 
 <style scoped lang="sass">
+.container
+    display: flex
+    flex-direction: column
 .button
     width: 500px
     height: 50px

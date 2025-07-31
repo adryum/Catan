@@ -1,5 +1,5 @@
 import { ref, type Ref } from "vue";
-import { Hex, HexPoint, isSamePoint, type TwoDCoords } from "./Hex";
+import { Hex, HexPoint, HexSide, isSamePoint, type TwoDCoords } from "./Hex";
 import { getLineAndCharacterOfPosition } from "typescript";
 import { getDistance } from "./Utils";
 import { GamePiece } from "./TilePointInfo";
@@ -9,11 +9,13 @@ export class TwoDGrid {
     tileSize: number;
     tiles!: Hex[][];
     interactableGridPoint!: Ref<PointGroup[]>
+    interactableGridSides!: Ref<SideGroup[]>
 
     constructor(size: TwoDCoords, tileSize: number) {
         this.size = size
         this.tileSize = tileSize
         this.interactableGridPoint = ref([])
+        this.interactableGridSides = ref([])
         this.generate2DTileArray();
     }
 
@@ -47,6 +49,67 @@ export class TwoDGrid {
                 }
             });
         })
+    }
+
+    generateInteractableSideCoords() {
+        // points above ui that can be clicked
+        this.interactableGridSides.value = []
+
+        this.tiles.forEach(row => {
+            row.forEach(hex => {
+
+                for (const enumPoint of Object.values(HexSide).filter(v => typeof v === "number") as HexSide[]) {
+                    const connection: HexConnectionSide = {
+                        coords: hex.getAbsoluteSidesCoords(enumPoint),
+                        hex: hex,
+                        side: enumPoint
+                    }
+
+                    addSideToGridArray(this.interactableGridSides.value, connection)
+                }
+            });
+        })
+    }
+}
+
+export interface HexConnectionSide {
+    hex: Hex,
+    side: HexSide,
+    coords: TwoDCoords
+}
+
+export class SideGroup {
+    sides: HexConnectionSide[] = []
+    relativeCoords: TwoDCoords
+
+    maximumDistance = 1
+
+    setSidePiece(piece: GamePiece) {
+        console.log(this.sides, piece);
+        
+        this.sides.forEach(side => {
+            side.hex.setSideInfo(side.side, piece)
+        });
+    }
+
+    addSide(side: HexConnectionSide) {
+        this.sides.push(side)
+    }
+
+    tryAddSide(connection: HexConnectionSide): boolean {
+        if (getDistance(connection.coords, this.relativeCoords) < this.maximumDistance) {
+            if (this.sides.length <= 2) {
+                this.addSide(connection)
+                return true
+            }
+        }
+
+        return false
+    }
+
+    constructor(connection: HexConnectionSide) {
+        this.relativeCoords = connection.coords
+        this.addSide(connection)
     }
 }
 
@@ -97,4 +160,12 @@ function addPointToGridArray(pointGroups: PointGroup[], connection: HexConnectio
     if (pointGroups.some(e => e.tryAddPoint(connection))) return
 
     pointGroups.push(new PointGroup(connection))
+}
+
+function addSideToGridArray(sideGroups: SideGroup[], connection: HexConnectionSide) {
+    console.log(connection);
+    
+    if (sideGroups.some(e => e.tryAddSide(connection))) return
+
+    sideGroups.push(new SideGroup(connection))
 }

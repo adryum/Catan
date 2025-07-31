@@ -1,5 +1,5 @@
 import { reactive, ref, type Reactive, type Ref } from "vue";
-import { GamePiece, PlayerTeam, TilePointInfo } from "./TilePointInfo";
+import { GamePiece, PlayerTeam, TilePointInfo, TileSideInfo } from "./TilePointInfo";
 
 export class Hex {
     keyInGrid: TwoDCoords;
@@ -10,10 +10,20 @@ export class Hex {
 
     parentElement!: HTMLDivElement
     pointInfo: Reactive<Map<HexPoint, TilePointInfo>>
+    sideInfo: Reactive<Map<HexSide, TileSideInfo>>
 
     constructor(key: TwoDCoords, pixelSize: number) {
         this.keyInGrid = key
         this.outerRadiuss = pixelSize / 2
+
+        this.sideInfo = reactive(new Map([
+            [HexSide.TopRight, new TileSideInfo(HexSide.TopRight)],
+            [HexSide.Right, new TileSideInfo(HexSide.Right)],
+            [HexSide.TopLeft, new TileSideInfo(HexSide.TopLeft)],
+            [HexSide.BottomLeft, new TileSideInfo(HexSide.BottomLeft)],
+            [HexSide.BottomRight, new TileSideInfo(HexSide.BottomRight)],
+            [HexSide.Left, new TileSideInfo(HexSide.Left)]
+        ]))
 
         this.pointInfo = reactive(new Map([
             [HexPoint.Top, new TilePointInfo(HexPoint.Top)],
@@ -23,6 +33,13 @@ export class Hex {
             [HexPoint.BottomRight, new TilePointInfo(HexPoint.BottomRight)],
             [HexPoint.BottomLeft, new TilePointInfo(HexPoint.BottomLeft)]
         ]))
+    }
+
+    setSideInfo(side: HexSide, piece: GamePiece = GamePiece.Wall) {
+     
+        this.sideInfo.set(side, new TileSideInfo(side, PlayerTeam.Blue, piece))
+
+        console.log(this.sideInfo.get(side));
     }
 
     setPointInfo(point: HexPoint, piece: GamePiece) {
@@ -64,12 +81,24 @@ export class Hex {
 
     }
 
-    getSidesCenter(side: HexSide): TwoDCoords {
+    getRelativeSidesCoords(side: HexSide): TwoDCoords {
+        const rect = this.parentElement.getBoundingClientRect();
         var angle_deg = 60 * side
         var angle_rad = Math.PI / 180 * angle_deg
         return { 
-            x: this.center.x + this.innerRadiuss * Math.cos(angle_rad) * 1.05 ,
-            y: this.center.y + this.innerRadiuss * Math.sin(angle_rad) * 0.95
+            x: (rect.width / 2) + this.innerRadiuss * Math.cos(angle_rad) * 1.15 ,
+            y: (rect.height / 2) + this.innerRadiuss * Math.sin(angle_rad) * 1
+        }
+    }
+
+    getAbsoluteSidesCoords(side: HexSide): TwoDCoords {
+        const relativeCoords = this.getRelativeSidesCoords(side)
+        const rect = this.parentElement.getBoundingClientRect();
+        console.log('sideCoord' ,relativeCoords);
+        
+        return {
+            x: rect.left + relativeCoords.x,
+            y: rect.realTop + relativeCoords.y
         }
     }
 
