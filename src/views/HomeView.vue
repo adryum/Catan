@@ -3,13 +3,17 @@ import GameGrid from '@/components/GameGrid.vue'
 import HexTile from '@/components/HexTile.vue';
 import InteractionPoint from '@/components/InteractionPoint.vue';
 import InteractionSide from '@/components/InteractionSide.vue';
-import { Hex } from '@/logic/Hex';
-import { TwoDGrid } from '@/logic/TwoDGrid';
-import { createCssClass } from '@/logic/Utils';
-import { h, ref, render } from 'vue';
+import { HexUI } from '@/logic/view/HexUI';
+import { HexGrid } from '@/logic/repository/HexGrid';
+import { createCssClass } from '@/logic/utils/Utils';
+import { h, onMounted, ref, render } from 'vue';
 
-const grid = new TwoDGrid({x: 5, y: 5}, 200);
-const gameGrid = ref<InstanceType<typeof GameGrid>>()
+var grid: HexGrid = new HexGrid(
+    { x: 2, y: 2 },
+    200
+)
+
+const gameGrid = ref<HTMLDivElement>()
 const div = ref<HTMLDivElement>()
 
 function createPointCubes() {
@@ -19,21 +23,26 @@ function createSideCubes() {
     grid.generateInteractableSideCoords()
 }
 
+onMounted(() => {
+  if (gameGrid.value) {
+    
+  }
+})
+
 </script>
 
 <template>
   <main class="container">
-    <GameGrid ref="gameGrid">
+    <div ref="gameGrid">
         <div ref="div" class="interactionGrid">
             <InteractionPoint v-for="group in grid.interactableGridPoint.value" :group="group" />
             <InteractionSide v-for="group in grid.interactableGridSides.value" :group="group" />
         </div>
-        <div v-for="row in grid.tiles">
-            <HexTile v-for="tile in row" :point-info="[]" :hex-tile="tile"/>
 
+        <div v-for="row in grid.hexTiles">
+            <HexTile v-for="hex in row.arr" :point-info="[]" :hex="hex"/>
         </div>
-    
-    </GameGrid>
+    </div>
     <button class="button" @click="createPointCubes"></button>
     <button class="button" @click="createSideCubes"></button>
   </main>

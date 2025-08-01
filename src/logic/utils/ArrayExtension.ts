@@ -1,9 +1,10 @@
-import { HexPoint, HexSide } from "./Hex";
-import type { TilePointInfo } from "./TilePointInfo";
+import  { HexPoint, HexSide,  } from "../models/Enums";
+
+import type { HexPointInfo } from "../repository/TilePointInfo";
 
 declare global {
     interface Array<T> {
-        isSideConnected(this: TilePointInfo[],side: HexSide): boolean;
+        isSideConnected(this: HexPointInfo[],side: HexSide): boolean;
     }
 }
 
@@ -33,7 +34,7 @@ Array.prototype.isSideConnected = function (side: HexSide): boolean {
 
 declare global {
     interface Map<K, V> {
-        isSideConnected(this: Map<HexPoint, TilePointInfo>, side: HexSide): boolean;
+        isSideConnected(this: Map<HexPoint, HexPointInfo>, side: HexSide): boolean;
     }
 }
 

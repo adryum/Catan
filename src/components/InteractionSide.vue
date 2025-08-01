@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { Hex, HexPoint, HexSide } from '@/logic/Hex';
-import { GamePiece, type TilePointInfo } from '@/logic/TilePointInfo';
-import type { PointGroup, SideGroup } from '@/logic/TwoDGrid';
+import { GamePiece } from '@/logic/models/Enums';
+import type { SideGroup } from '@/logic/view/SideGroup';
 import { onMounted, ref, useCssModule, type Ref } from 'vue';
 
 const props = defineProps<{

@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { useCssModule } from 'vue';
-import HexTile from './HexTile.vue'
-import { Hex } from '@/logic/Hex';
-
-
 
 const s = useCssModule()
 </script>
