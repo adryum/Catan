@@ -1,41 +1,73 @@
-import { HexConnection, NeighbourHex,  HexSide } from "../models/Enums"
-import type { ITwoDCoords } from "../models/Interfaces"
+import { HexConnection, NeighbourHex,  HexSide, GamePiece, PlayerTeam } from "../models/Enums"
+import type { IGamePiece, ITwoDCoords } from "../models/Interfaces"
+import { loopThroughEnums } from "../utils/Utils"
+import type { GridSide } from "./GridSide"
 import type { Hex } from "./Hex"
 import type { HexGamePieceInfo } from "./HexSideInfo"
 
 export class GridPoint {
     type: HexConnection
     coords: ITwoDCoords
-    hexes!: Hex[]
+    hexes: Hex[]
+    gamePiece: IGamePiece
 
     constructor(type: HexConnection, coords: ITwoDCoords) {
         this.type = type
         this.coords = coords
+        this.hexes = []
+        this.gamePiece = { 
+            piece: GamePiece.None, 
+            team: PlayerTeam.None 
+        }
     }
 
-    addHex(hex: Hex) {
-        var rect = hex.parentElement.getBoundingClientRect()
+    setGamePiece(piece: IGamePiece) {
+        this.gamePiece = piece
+    }
 
+    getGamePiece() {
+        return this.gamePiece
+    }
+
+    giveReferenceToNeighbouringGridSides() {
+        loopThroughEnums(NeighbourHex, val => {
+            this.getSide(val)?.setPoint(this)
+        })
+    }
+
+
+    // left: 200px
+    // poiint
+    // y 150px;
+    // .x 199.59292143521046px;
+
+    addHex(hex: Hex) {
         if (this.type === HexConnection.Triangle) {
-            if (rect.left > this.coords.x) {
+            if (this.coords.x < hex.center.x && this.coords.y > hex.center.y) {
                 this.hexes[NeighbourHex.First] = hex
-            } else if (rect.realTop > this.coords.y) {
+            } else if (hex.center.y > this.coords.y) {
                 this.hexes[NeighbourHex.Second] = hex
             } else {
+                if (this.hexes[NeighbourHex.Third]) console.error('third is reasigned!!')
                 this.hexes[NeighbourHex.Third] = hex
             }
         } else {
-            if (rect.realTop < this.coords.y) {
+            if (hex.center.y < this.coords.y) {
                 this.hexes[NeighbourHex.First] = hex
-            } else if (rect.left > this.coords.x) {
+            } else if (hex.center.x > this.coords.x) {
                 this.hexes[NeighbourHex.Second] = hex
             } else {
+                if (this.hexes[NeighbourHex.Third]) console.error('third is reasigned!!')
                 this.hexes[NeighbourHex.Third] = hex
             }
         }
     }
 
-    getSide(clockwiseNumber: NeighbourHex): HexGamePieceInfo | null {
+    getHex(clockwiseNumber: NeighbourHex): Hex {
+        return this.hexes[clockwiseNumber]
+    }
+
+    getSide(clockwiseNumber: NeighbourHex): GridSide | null {
         // we want to pass sides reference so we can modify it
         if (this.type === HexConnection.Triangle) {
             if (clockwiseNumber === NeighbourHex.First) {

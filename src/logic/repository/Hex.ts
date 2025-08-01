@@ -1,12 +1,12 @@
-import { type Reactive, reactive } from "vue";
+
 import { HexPoint, HexSide, GamePiece, PlayerTeam } from "../models/Enums";
 import type { ITwoDCoords } from "../models/Interfaces";
-import type { HexSides } from "../models/Types";
+import type { HexPoints, HexSides } from "../models/Types";
 import { loopThroughEnums } from "../utils/Utils";
 import { HexGamePieceInfo } from "./HexSideInfo";
-import { HexPointInfo } from "./TilePointInfo";
-import { TileSideInfo } from "./TileSideInfo";
-
+import { GridSide } from "./GridSide";
+import type { GridPoint } from "./GridPoint";
+import { type Ref, ref } from "vue";
 
 export class Hex {
     keyInGrid: ITwoDCoords;
@@ -17,13 +17,13 @@ export class Hex {
     innerRadiuss: number;
 
     leftTopPosition!: ITwoDCoords
-    
     center!: ITwoDCoords;
+
     sides: HexSides
+    points: HexPoints
 
     parentElement!: HTMLDivElement
-    pointInfo: Reactive<Map<HexPoint, HexPointInfo>>
-    sideInfo: Reactive<Map<HexSide, TileSideInfo>>
+    style: Ref<string>
 
     constructor(key: ITwoDCoords, sizePx: number) {
         this.keyInGrid = key
@@ -31,29 +31,36 @@ export class Hex {
         this.outerRadiuss = sizePx / 2
         this.innerRadiuss =  this.outerRadiuss * Math.sqrt(3) / 2
         this.sides = {} as HexSides
-
-        this.instantiateSides()
-
-        this.sideInfo = reactive(new Map([
-            [HexSide.TopRight, new TileSideInfo(HexSide.TopRight)],
-            [HexSide.Right, new TileSideInfo(HexSide.Right)],
-            [HexSide.TopLeft, new TileSideInfo(HexSide.TopLeft)],
-            [HexSide.BottomLeft, new TileSideInfo(HexSide.BottomLeft)],
-            [HexSide.BottomRight, new TileSideInfo(HexSide.BottomRight)],
-            [HexSide.Left, new TileSideInfo(HexSide.Left)]
-        ]))
-
-        this.pointInfo = reactive(new Map([
-            [HexPoint.Top, new HexPointInfo(HexPoint.Top)],
-            [HexPoint.TopRight, new HexPointInfo(HexPoint.TopRight)],
-            [HexPoint.TopLeft, new HexPointInfo(HexPoint.TopLeft)],
-            [HexPoint.Bottom, new HexPointInfo(HexPoint.Bottom)],
-            [HexPoint.BottomRight, new HexPointInfo(HexPoint.BottomRight)],
-            [HexPoint.BottomLeft, new HexPointInfo(HexPoint.BottomLeft)]
-        ]))
+        this.points = {} as HexPoints
+        this.style = ref('')
     }
 
-    getSide(side: HexSide): HexGamePieceInfo {
+    setStyle(style: string) {
+        // WHY DOES THIS WORK??!??!
+        this.style = style
+    }
+
+    getPoint(point: HexPoint): GridPoint {
+        return this.points[point]
+    }
+
+    getPoints(): HexPoints {
+        return this.points
+    }
+
+    setPoint(gridPoint: GridPoint, point: HexPoint) {
+        this.points[point] = gridPoint
+    }
+
+    setPoints(givenPoints: HexPoints) {
+        loopThroughEnums(HexPoint, val => {
+            if (givenPoints[val]) {
+                this.points[val] = givenPoints[val]
+            }
+        })
+    }
+
+    getSide(side: HexSide): GridSide {
         return this.sides[side]
     }
 
@@ -62,20 +69,20 @@ export class Hex {
     }
 
     setSideInfo(side: HexSide, piece: GamePiece = GamePiece.Wall) {
-        this.sideInfo.set(side, new TileSideInfo(side, PlayerTeam.Blue, piece))
+        // this.sideInfo.set(side, new TileSideInfo(side, PlayerTeam.Blue, piece))
 
-        console.log(this.sideInfo.get(side));
+        // console.log(this.sideInfo.get(side));
     }
 
     setPointInfo(point: HexPoint, piece: GamePiece) {
-        this.pointInfo.set(point, new HexPointInfo(point, PlayerTeam.Blue, piece))
+        // this.pointInfo.set(point, new HexPointInfo(point, PlayerTeam.Blue, piece))
 
-        console.log(this.pointInfo.get(point));
+        // console.log(this.pointInfo.get(point));
     }
 
     instantiateSides() {
         loopThroughEnums(HexSide, val => {
-            this.sides[val] = new HexGamePieceInfo(GamePiece.None)
+            this.sides[val] = new GridSide(this.getAbsoluteSidesCoords(val))
         })
     }
 
@@ -89,22 +96,10 @@ export class Hex {
 
     setLeftTopPosition(coords: ITwoDCoords) {
         this.leftTopPosition = coords
-    }
-
-    setHexElement(element: HTMLDivElement) {
-        const rect = element.getBoundingClientRect();
-
-        element.style.height = this.outerRadiuss * 2 + 'px'
-        element.style.width = this.outerRadiuss * 2 + 'px'
-
-        this.parentElement = element
-        // this.outerRadiuss = rect.width / 2
-        this.innerRadiuss = this.outerRadiuss * Math.sqrt(3) / 2
         this.center = {
-            y: rect.realTop + this.outerRadiuss, 
-            x: rect.left + this.outerRadiuss
+            x: this.leftTopPosition.x + this.outerRadiuss,
+            y: this.leftTopPosition.y + this.outerRadiuss
         }
-
     }
 
     getRelativeSidesCoords(side: HexSide): ITwoDCoords {

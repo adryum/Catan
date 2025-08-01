@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { GamePiece, HexPoint, HexSide} from '@/logic/models/Enums';
 import { computed, onMounted, ref, useCssModule, type Ref } from 'vue';
-import type { Hex } from '@/logic/repository/Hex';
+import { getPieceImage, type Hex } from '@/logic/repository/Hex';
 
 const props = defineProps<{
     hex: Hex,
@@ -88,49 +88,54 @@ const s = useCssModule()
  
 <!-- sides -->
  <div ref="sideTopLeft" :class="s.wallTop">
-    <img :src="props.hex.sideInfo.get(HexSide.TopLeft)?.getPieceImage(HexSide.TopLeft)" alt="tile">
+    <img v-if="props.hex.getSide(HexSide.TopLeft).hasPiece()" 
+    :src="getPieceImage(props.hex.getSide(HexSide.TopLeft).gamePiece.piece, HexSide.TopLeft)!" 
+    alt="tile">
  </div>
  <div ref="sideTopRight" :class="s.wallTop" >
-    <img  :src="props.hex.sideInfo.get(HexSide.TopRight)?.getPieceImage(HexSide.TopRight)"  alt="tile">
+    <img v-if="props.hex.getSide(HexSide.TopRight).hasPiece()"
+    :src="getPieceImage(props.hex.getSide(HexSide.TopRight).gamePiece.piece, HexSide.TopRight)!"  alt="tile">
  </div>
  <div ref="sideRight" :class="s.wall" >
-    <img :src="props.hex.sideInfo.get(HexSide.Right)?.getPieceImage(HexSide.Right)"  alt="tile">
+    <img v-if="props.hex.getSide(HexSide.Right).hasPiece()"
+    :src="getPieceImage(props.hex.getSide(HexSide.Right).gamePiece.piece, HexSide.Right)!"  alt="tile">
  </div>
  <div ref="sideLeft" :class="s.wall" >
-    <img  :src="props.hex.sideInfo.get(HexSide.Left)?.getPieceImage(HexSide.Left)"  alt="tile">
+    <img v-if="props.hex.getSide(HexSide.Left).hasPiece()"
+    :src="getPieceImage(props.hex.getSide(HexSide.Left).gamePiece.piece, HexSide.Left)!"  alt="tile">
  </div>
  <div ref="sideBottomLeft" :class="s.wall" >
-    <img  :src="props.hex.sideInfo.get(HexSide.BottomLeft)?.getPieceImage(HexSide.BottomLeft)"  alt="tile">
+    <img v-if="props.hex.getSide(HexSide.BottomLeft).hasPiece()"
+    :src="getPieceImage(props.hex.getSide(HexSide.BottomLeft).gamePiece.piece, HexSide.BottomLeft)!"  alt="tile">
  </div>
  <div ref="sideBottomRight" :class="s.wall" >
-    <img :src="props.hex.sideInfo.get(HexSide.BottomRight)?.getPieceImage(HexSide.BottomRight)"  alt="tile">
+    <img v-if="props.hex.getSide(HexSide.BottomRight).hasPiece()"
+    :src="getPieceImage(props.hex.getSide(HexSide.BottomRight).gamePiece.piece, HexSide.BottomRight)!"  alt="tile">
  </div>
-
 
  <!-- points -->
  <div ref="topPoint" :class="[s.topPoint ]">
-    <img :src="props.hex.pointInfo.get(HexPoint.Top)?.getPieceImage()" alt="tile">
+    <img :src="getPieceImage(props.hex.getPoint(HexPoint.Top)?.gamePiece.piece)!" alt="tile">
  </div>
  <div ref="topRightPoint" :class="s.point">
-    <img :src="props.hex.pointInfo.get(HexPoint.TopRight)?.getPieceImage()" alt="tile">
+    <img :src="getPieceImage(props.hex.getPoint(HexPoint.TopRight)?.gamePiece.piece)!" alt="tile">
  </div>
  <div ref="topLeftPoint" :class="s.point">
-    <img :src="props.hex.pointInfo.get(HexPoint.TopLeft)?.getPieceImage()" alt="tile">
+    <img :src="getPieceImage(props.hex.getPoint(HexPoint.TopLeft)?.gamePiece.piece)!" alt="tile">
  </div>
  <div ref="bottomPoint" :class="s.point">
-    <img :src="props.hex.pointInfo.get(HexPoint.Bottom)?.getPieceImage()" alt="tile">
+    <img :src="getPieceImage(props.hex.getPoint(HexPoint.Bottom)?.gamePiece.piece)!" alt="tile">
  </div>
  <div ref="bottomRightPoint" :class="s.point">
-    <img :src="props.hex.pointInfo.get(HexPoint.BottomRight)?.getPieceImage()" alt="tile">
+    <img :src="getPieceImage(props.hex.getPoint(HexPoint.BottomRight)?.gamePiece.piece)!" alt="tile">
  </div>
  <div ref="bottomLeftPoint" :class="s.point">
-    <img :src="props.hex.pointInfo.get(HexPoint.BottomLeft)?.getPieceImage()" alt="tile">
+    <img :src="getPieceImage(props.hex.getPoint(HexPoint.BottomLeft)?.gamePiece.piece)!" alt="tile">
  </div>
 
- <div id="tile" :class="s.tile">
+ <div id="tile" :style="hex.style.value" :class="s.tile">
     <img src="/src/assets/images/tileMesa.svg" alt="tile">
  </div>
- <!-- <div :class="s.info">{{ hexTile.keyInGrid }}</div> -->
 </div>
 </template>
 

@@ -9,7 +9,7 @@ import { createCssClass } from '@/logic/utils/Utils';
 import { h, onMounted, ref, render } from 'vue';
 
 var grid: HexGrid = new HexGrid(
-    { x: 2, y: 2 },
+    { x: 3, y: 2 },
     200
 )
 
@@ -35,8 +35,8 @@ onMounted(() => {
   <main class="container">
     <div ref="gameGrid">
         <div ref="div" class="interactionGrid">
-            <InteractionPoint v-for="group in grid.interactableGridPoint.value" :group="group" />
-            <InteractionSide v-for="group in grid.interactableGridSides.value" :group="group" />
+            <InteractionPoint v-for="point in grid.gridPoints.value" :point="point" />
+            <!-- <InteractionSide v-for="group in grid.interactableGridSides.value" :group="group" /> -->
         </div>
 
         <div v-for="row in grid.hexTiles">

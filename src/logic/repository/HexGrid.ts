@@ -3,7 +3,7 @@ import { GridPoint } from "./GridPoint";
 import { getDistance, loopThroughEnums } from "../utils/Utils";
 import { Hex } from "./Hex";
 import type { HexSides } from "../models/Types";
-import  { HexSide, HexPoint, HexConnection } from "../models/Enums";
+import  { HexSide, HexPoint, HexConnection, NeighbourHex } from "../models/Enums";
 import type { ITwoDCoords, IHexBasePoint, IHexBaseSide, IIndentedRow } from "../models/Interfaces";
 import  { SideGroup } from "../view/SideGroup";
 import { PointGroup } from "../view/PointGroup";
@@ -16,7 +16,7 @@ export class HexGrid {
     tileInnerRadiuss: number
     tileOuterRadiuss: number
     
-    gridPoints!: GridPoint[]
+    gridPoints!: Ref<GridPoint[]>
     hexTiles!: IIndentedRow[]
 
     interactableGridPoint!: Ref<PointGroup[]>
@@ -32,12 +32,19 @@ export class HexGrid {
         this.tileInnerRadiuss = this.tileOuterRadiuss * Math.sqrt(3) / 2
 
         this.generateTiles()
-        this.combineCommonHexSides()
         this.setTileLeftTopPosition()
-        this.generateGridPoints();
+        this.combineCommonHexSides()
+        this.generateGridPoints()
+        this.setCommonHexPoints()
 
         this.interactableGridPoint = ref([])
         this.interactableGridSides = ref([])
+    }
+
+    setPointReferencesToGridSides() {
+        this.gridPoints.value.forEach(point => {
+            point.giveReferenceToNeighbouringGridSides()
+        })
     }
 
     generateTiles() {
@@ -58,7 +65,21 @@ export class HexGrid {
         }
 
         // console.log('hex tiles: ')
-        // console.table(this.hexTiles);
+        console.log(this.hexTiles);
+    }
+
+    setCommonHexPoints() {
+        this.gridPoints.value.forEach(point => {
+            if (point.type === HexConnection.Triangle) {
+                point.getHex(NeighbourHex.First)?.setPoint(point, HexPoint.BottomLeft)
+                point.getHex(NeighbourHex.Second)?.setPoint(point, HexPoint.Top)
+                point.getHex(NeighbourHex.Third)?.setPoint(point, HexPoint.BottomRight)
+            } else {
+                point.getHex(NeighbourHex.First)?.setPoint(point, HexPoint.Bottom)
+                point.getHex(NeighbourHex.Second)?.setPoint(point, HexPoint.TopLeft)
+                point.getHex(NeighbourHex.Third)?.setPoint(point, HexPoint.TopRight)
+            }
+        })
     }
 
     combineCommonHexSides() {
@@ -110,15 +131,26 @@ export class HexGrid {
 
     generateGridPoints() {
         const distanceBetweenPoints = 1
-        this.gridPoints = []
+        this.gridPoints = ref([])
 
         this.hexTiles.forEach(indentedRow => {
             indentedRow.arr.forEach(hex => {
+                console.log('-------------------new hex ---------------------');
+                
                 loopThroughEnums(HexPoint, (value) => {
                     const newPointCoords = hex.getAbsolutePointCoords(value)
+                    var point: GridPoint
+
+                    // it skips it somewhere here
 
                     // if there's another point nearby
-                    if (this.gridPoints.some(point => getDistance(point.coords, newPointCoords) < distanceBetweenPoints)) {
+                    if (this.gridPoints.value.some(point => {
+                            if (getDistance(point.coords, newPointCoords) < distanceBetweenPoints) {
+                                point.addHex(hex)
+                                return true
+                            }
+                    })) {
+                
                         return
                     }
 
@@ -126,13 +158,18 @@ export class HexGrid {
                         case HexPoint.Top: 
                         case HexPoint.BottomRight:
                         case HexPoint.BottomLeft:
-                            this.gridPoints.push(new GridPoint(HexConnection.Triangle, newPointCoords))
+                            point = new GridPoint(HexConnection.Triangle, newPointCoords)
+                            point.addHex(hex)
+                            this.gridPoints.value.push(point)
+
                             break;
 
                         case HexPoint.TopRight:
                         case HexPoint.Bottom:
                         case HexPoint.TopLeft:
-                            this.gridPoints.push(new GridPoint(HexConnection.ReverseTriangle, newPointCoords))
+                            point = new GridPoint(HexConnection.ReverseTriangle, newPointCoords)
+                            point.addHex(hex)
+                            this.gridPoints.value.push(point)
                             break;
 
                         default:
@@ -143,6 +180,11 @@ export class HexGrid {
             });
         })
 
+        this.gridPoints.value.forEach(point => {
+            console.table(point.hexes);
+            
+        })
+
         console.log(this.gridPoints);
     }
 
@@ -151,7 +193,8 @@ export class HexGrid {
             indentedRow.arr.forEach(hex => {
                 const top = hex.keyInGrid.y * 3/2 * hex.outerRadiuss
                 const left = hex.outerRadiuss * indentedRow.indentation + hex.keyInGrid.x * hex.outerRadiuss * 2 
-                hex.setLeftTopPosition({x: left, y: top}) 
+                hex.setLeftTopPosition({x: left, y: top})
+                hex.instantiateSides()
             })
         })
     }

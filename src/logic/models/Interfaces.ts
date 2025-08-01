@@ -1,6 +1,6 @@
 import type { Hex } from "../repository/Hex";
 import type { HexUI } from "../view/HexUI";
-import type { HexPoint, HexSide } from "./Enums";
+import type { GamePiece, HexPoint, HexSide, PlayerTeam } from "./Enums";
 
 export interface IHexBase {
     hex: Hex,
@@ -33,4 +33,7 @@ export function containsPoint(arr: ITwoDCoords[], point: ITwoDCoords): boolean {
   return arr.some(p => isSamePoint(p, point));
 }
 
-
+export interface IGamePiece {
+    piece: GamePiece,
+    team: PlayerTeam,
+}
