@@ -88,29 +88,29 @@ const s = useCssModule()
  
 <!-- sides -->
  <div ref="sideTopLeft" :class="s.wallTop">
-    <img v-if="props.hex.getSide(HexSide.TopLeft).hasPiece()" 
-    :src="getPieceImage(props.hex.getSide(HexSide.TopLeft).gamePiece.piece, HexSide.TopLeft)!" 
+    <img v-if="props.hex.getSide(HexSide.TopLeft)?.hasPiece()" 
+    :src="getPieceImage(props.hex.getSide(HexSide.TopLeft)!.gamePiece.piece, HexSide.TopLeft)!" 
     alt="tile">
  </div>
  <div ref="sideTopRight" :class="s.wallTop" >
-    <img v-if="props.hex.getSide(HexSide.TopRight).hasPiece()"
-    :src="getPieceImage(props.hex.getSide(HexSide.TopRight).gamePiece.piece, HexSide.TopRight)!"  alt="tile">
+    <img v-if="props.hex.getSide(HexSide.TopRight)?.hasPiece()"
+    :src="getPieceImage(props.hex.getSide(HexSide.TopRight)!.gamePiece.piece, HexSide.TopRight)!"  alt="tile">
  </div>
  <div ref="sideRight" :class="s.wall" >
-    <img v-if="props.hex.getSide(HexSide.Right).hasPiece()"
-    :src="getPieceImage(props.hex.getSide(HexSide.Right).gamePiece.piece, HexSide.Right)!"  alt="tile">
+    <img v-if="props.hex.getSide(HexSide.Right)?.hasPiece()"
+    :src="getPieceImage(props.hex.getSide(HexSide.Right)!.gamePiece.piece, HexSide.Right)!"  alt="tile">
  </div>
  <div ref="sideLeft" :class="s.wall" >
-    <img v-if="props.hex.getSide(HexSide.Left).hasPiece()"
-    :src="getPieceImage(props.hex.getSide(HexSide.Left).gamePiece.piece, HexSide.Left)!"  alt="tile">
+    <img v-if="props.hex.getSide(HexSide.Left)?.hasPiece()"
+    :src="getPieceImage(props.hex.getSide(HexSide.Left)!.gamePiece.piece, HexSide.Left)!"  alt="tile">
  </div>
  <div ref="sideBottomLeft" :class="s.wall" >
-    <img v-if="props.hex.getSide(HexSide.BottomLeft).hasPiece()"
-    :src="getPieceImage(props.hex.getSide(HexSide.BottomLeft).gamePiece.piece, HexSide.BottomLeft)!"  alt="tile">
+    <img v-if="props.hex.getSide(HexSide.BottomLeft)?.hasPiece()"
+    :src="getPieceImage(props.hex.getSide(HexSide.BottomLeft)!.gamePiece.piece, HexSide.BottomLeft)!"  alt="tile">
  </div>
  <div ref="sideBottomRight" :class="s.wall" >
-    <img v-if="props.hex.getSide(HexSide.BottomRight).hasPiece()"
-    :src="getPieceImage(props.hex.getSide(HexSide.BottomRight).gamePiece.piece, HexSide.BottomRight)!"  alt="tile">
+    <img v-if="props.hex.getSide(HexSide.BottomRight)?.hasPiece()"
+    :src="getPieceImage(props.hex.getSide(HexSide.BottomRight)!.gamePiece.piece, HexSide.BottomRight)!"  alt="tile">
  </div>
 
  <!-- points -->

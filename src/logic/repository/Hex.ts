@@ -30,14 +30,14 @@ export class Hex {
         this.sizePx = sizePx
         this.outerRadiuss = sizePx / 2
         this.innerRadiuss =  this.outerRadiuss * Math.sqrt(3) / 2
-        this.sides = {} as HexSides
+        this.sides = {}
         this.points = {} as HexPoints
         this.style = ref('')
     }
 
     setStyle(style: string) {
         // WHY DOES THIS WORK??!??!
-        this.style = style
+        this.style.value = style
     }
 
     getPoint(point: HexPoint): GridPoint {
@@ -60,7 +60,7 @@ export class Hex {
         })
     }
 
-    getSide(side: HexSide): GridSide {
+    getSide(side: HexSide): GridSide | undefined {
         return this.sides[side]
     }
 
@@ -80,18 +80,22 @@ export class Hex {
         // console.log(this.pointInfo.get(point));
     }
 
-    instantiateSides() {
-        loopThroughEnums(HexSide, val => {
-            this.sides[val] = new GridSide(this.getAbsoluteSidesCoords(val))
-        })
-    }
+    // instantiateSides() {
+    //     loopThroughEnums(HexSide, val => {
+    //         this.sides[val] = new GridSide(this.getAbsoluteSidesCoords(val))
+    //     })
+    // }
 
-    setSides(givenSides: HexSides) {
-        loopThroughEnums(HexSide, val => {
-            if (givenSides[val]) {
-                this.sides[val] = givenSides[val]
-            }
-        })
+    // setSides(givenSides: HexSides) {
+    //     loopThroughEnums(HexSide, val => {
+    //         if (givenSides[val]) {
+    //             this.sides[val] = givenSides[val]
+    //         }
+    //     })
+    // }
+
+    setSide(side: HexSide, value: GridSide) {
+        this.sides[side] = value
     }
 
     setLeftTopPosition(coords: ITwoDCoords) {
@@ -102,17 +106,8 @@ export class Hex {
         }
     }
 
-    getRelativeSidesCoords(side: HexSide): ITwoDCoords {
-        var angle_deg = 60 * side
-        var angle_rad = Math.PI / 180 * angle_deg
-        return { 
-            x: this.outerRadiuss + this.innerRadiuss * Math.cos(angle_rad) * 1.15 ,
-            y: this.outerRadiuss + this.innerRadiuss * Math.sin(angle_rad) * 1
-        }
-    }
-
-    getAbsoluteSidesCoords(side: HexSide): ITwoDCoords {
-        const relativeCoords = this.getRelativeSidesCoords(side)
+    getAbsoluteSideCoords(side: HexSide): ITwoDCoords {
+        const relativeCoords = this.getRelativeSideCoords(side)
         // console.log('sideCoord' ,relativeCoords);
         
         return {

@@ -1,3 +1,4 @@
+import type { GridSide } from "../repository/GridSide";
 import type { Hex } from "../repository/Hex";
 import type { HexUI } from "../view/HexUI";
 import type { GamePiece, HexPoint, HexSide, PlayerTeam } from "./Enums";
@@ -23,6 +24,11 @@ export interface ITwoDCoords {
 export interface IIndentedRow {
     indentation: number,
     arr: Hex[]
+} 
+
+export interface IGridSideResponse {
+    hasNoHexesForSide: boolean,
+    side: GridSide | undefined
 } 
 
 export function isSamePoint(point1: ITwoDCoords, point2: ITwoDCoords) {

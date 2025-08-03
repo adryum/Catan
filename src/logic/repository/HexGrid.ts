@@ -7,6 +7,7 @@ import  { HexSide, HexPoint, HexConnection, NeighbourHex } from "../models/Enums
 import type { ITwoDCoords, IHexBasePoint, IHexBaseSide, IIndentedRow } from "../models/Interfaces";
 import  { SideGroup } from "../view/SideGroup";
 import { PointGroup } from "../view/PointGroup";
+import type { GridSide } from "./GridSide";
 
 export class HexGrid {
     // anchorElement: Element
@@ -17,10 +18,8 @@ export class HexGrid {
     tileOuterRadiuss: number
     
     gridPoints!: Ref<GridPoint[]>
+    gridSides!: Ref<GridSide[]>
     hexTiles!: IIndentedRow[]
-
-    interactableGridPoint!: Ref<PointGroup[]>
-    interactableGridSides!: Ref<SideGroup[]>
 
     constructor(gridSize: ITwoDCoords, tileSizePx: number) {
         // anchorElement: Element,
@@ -33,19 +32,69 @@ export class HexGrid {
 
         this.generateTiles()
         this.setTileLeftTopPosition()
-        this.combineCommonHexSides()
-        this.generateGridPoints()
-        this.setCommonHexPoints()
-
-        this.interactableGridPoint = ref([])
-        this.interactableGridSides = ref([])
+        this.createNewGridPoints()
+        this.assignPointsToHexes()
+        this.createHexSides()
+        this.setSideReferenceToArray()
     }
 
-    setPointReferencesToGridSides() {
+    createHexSides() {
+        // 2x2 grid = 19 sides
         this.gridPoints.value.forEach(point => {
-            point.giveReferenceToNeighbouringGridSides()
+            point.createAdjacentSides()
         })
     }
+
+    unHighLight(x: number, y: number) {
+        // highlight hex
+        const chosenHex = this.hexTiles[y].arr[x]
+        console.log('highlighting');
+        const style = ''
+        
+        this.getNeighbouringHex(chosenHex, HexSide.BottomLeft)?.setStyle(style)
+        this.getNeighbouringHex(chosenHex, HexSide.BottomRight)?.setStyle(style)
+        this.getNeighbouringHex(chosenHex, HexSide.Left)?.setStyle(style)
+        this.getNeighbouringHex(chosenHex, HexSide.Right)?.setStyle(style)
+        this.getNeighbouringHex(chosenHex, HexSide.TopLeft)?.setStyle(style)
+        this.getNeighbouringHex(chosenHex, HexSide.TopRight)?.setStyle(style)
+    }
+
+    highlightHex(x: number, y: number) {
+        // highlight hex
+        const chosenHex = this.hexTiles[y].arr[x]
+        console.log('highlighting');
+        const style = 'opacity: 0.5;'
+        
+        
+        this.getNeighbouringHex(chosenHex, HexSide.BottomLeft)?.setStyle(style)
+        this.getNeighbouringHex(chosenHex, HexSide.BottomRight)?.setStyle(style)
+        this.getNeighbouringHex(chosenHex, HexSide.Left)?.setStyle(style)
+        this.getNeighbouringHex(chosenHex, HexSide.Right)?.setStyle(style)
+        this.getNeighbouringHex(chosenHex, HexSide.TopLeft)?.setStyle(style)
+        this.getNeighbouringHex(chosenHex, HexSide.TopRight)?.setStyle(style)
+    }
+
+    setSideReferenceToArray() {
+        this.gridSides = ref([])
+
+        this.hexTiles.forEach(indRow => {
+            indRow.arr.forEach(hex => {
+                loopThroughEnums(HexSide, val => {
+                    var side = hex.getSide(val)!
+               
+                    if (side && !this.gridSides.value.includes(side)) {
+                        this.gridSides.value.push(side)
+                        console.log('side points', side.sidePoints);
+
+                    }
+
+                    
+                })
+            })
+        })
+
+    }
+
 
     generateTiles() {
         this.hexTiles = []
@@ -63,12 +112,9 @@ export class HexGrid {
                 this.hexTiles[y].arr[x] = new Hex({x, y}, this.tileSizePx)
             }
         }
-
-        // console.log('hex tiles: ')
-        console.log(this.hexTiles);
     }
 
-    setCommonHexPoints() {
+    assignPointsToHexes() {
         this.gridPoints.value.forEach(point => {
             if (point.type === HexConnection.Triangle) {
                 point.getHex(NeighbourHex.First)?.setPoint(point, HexPoint.BottomLeft)
@@ -83,6 +129,7 @@ export class HexGrid {
     }
 
     combineCommonHexSides() {
+        // faulty combination!!!
         this.hexTiles.forEach((indentRow, y) => {
             indentRow.arr.forEach((hex, x) => {
                 var hexSides: HexSides = {} as HexSides
@@ -103,19 +150,12 @@ export class HexGrid {
                     hexSides[HexSide.BottomLeft] = neighbour.getSide(HexSide.TopRight)
                 }
 
-                // console.log('----hex-----');
-                
-                // console.log(hexSides[HexSide.TopLeft]);
-                // console.log(hexSides[HexSide.Left]);
-                // console.log(hexSides[HexSide.BottomLeft]);
-                
-                
                 // hex.setSides(hexSides)
             })
         })
 
         // test
-        // const refSides: HexGamePieceInfo[] = []
+        // const refSides: GridSide[] = []
         // this.hexTiles.forEach((indentedRow) => {
         //     indentedRow.arr.forEach((hex) => {
         //         loopThroughEnums(HexSide, val => {
@@ -129,14 +169,13 @@ export class HexGrid {
         // console.log('All sides in grid:', refSides);
     }
 
-    generateGridPoints() {
+    createNewGridPoints() {
+        // works
         const distanceBetweenPoints = 1
         this.gridPoints = ref([])
 
         this.hexTiles.forEach(indentedRow => {
             indentedRow.arr.forEach(hex => {
-                console.log('-------------------new hex ---------------------');
-                
                 loopThroughEnums(HexPoint, (value) => {
                     const newPointCoords = hex.getAbsolutePointCoords(value)
                     var point: GridPoint
@@ -179,65 +218,60 @@ export class HexGrid {
                 })
             });
         })
-
-        this.gridPoints.value.forEach(point => {
-            console.table(point.hexes);
-            
-        })
-
         console.log(this.gridPoints);
     }
 
     setTileLeftTopPosition() {
+        // works
         this.hexTiles.forEach(indentedRow => {
             indentedRow.arr.forEach(hex => {
                 const top = hex.keyInGrid.y * 3/2 * hex.outerRadiuss
                 const left = hex.outerRadiuss * indentedRow.indentation + hex.keyInGrid.x * hex.outerRadiuss * 2 
                 hex.setLeftTopPosition({x: left, y: top})
-                hex.instantiateSides()
             })
         })
     }
 
-    generateInteractablePointsCoords() {
-        // points above ui that can be clicked
-        this.interactableGridPoint.value = []
+    // generateInteractablePointsCoords() {
+    //     // points above ui that can be clicked
+    //     this.interactableGridPoint.value = []
 
-        this.hexTiles.forEach(indentedRow => {
-            indentedRow.arr.forEach(hex => {
-                loopThroughEnums(HexPoint, val => {
-                    const connection: IHexBasePoint = {
-                        coords: hex.getAbsolutePointCoords(val),
-                        hex: hex,
-                        point: val
-                    }
+    //     this.hexTiles.forEach(indentedRow => {
+    //         indentedRow.arr.forEach(hex => {
+    //             loopThroughEnums(HexPoint, val => {
+    //                 const connection: IHexBasePoint = {
+    //                     coords: hex.getAbsolutePointCoords(val),
+    //                     hex: hex,
+    //                     point: val
+    //                 }
 
-                    addPointToGridArray(this.interactableGridPoint.value, connection)
-                })
-            });
-        })
-    }
+    //                 addPointToGridArray(this.interactableGridPoint.value, connection)
+    //             })
+    //         });
+    //     })
+    // }
 
-    generateInteractableSideCoords() {
-        // points above ui that can be clicked
-        this.interactableGridSides.value = []
+    // generateInteractableSideCoords() {
+    //     // points above ui that can be clicked
+    //     this.interactableGridSides.value = []
 
-        this.hexTiles.forEach(indentedRow => {
-            indentedRow.arr.forEach(hex => {
-                loopThroughEnums(HexSide, val => {
-                    const connection: IHexBaseSide = {
-                        coords: hex.getAbsoluteSidesCoords(val),
-                        hex: hex,
-                        side: val
-                    }
+    //     this.hexTiles.forEach(indentedRow => {
+    //         indentedRow.arr.forEach(hex => {
+    //             loopThroughEnums(HexSide, val => {
+    //                 const connection: IHexBaseSide = {
+    //                     coords: hex.getAbsoluteSidesCoords(val),
+    //                     hex: hex,
+    //                     side: val
+    //                 }
 
-                    addSideToGridArray(this.interactableGridSides.value, connection)
-                })
-            });
-        })
-    }
+    //                 addSideToGridArray(this.interactableGridSides.value, connection)
+    //             })
+    //         });
+    //     })
+    // }
 
     getNeighbouringHex(hex: Hex, side: HexSide): Hex | null {
+        // works flawlesly
         const hexPos = hex.keyInGrid
         const myIndentation = this.hexTiles[hexPos.y].indentation * 0.5
         var neighboursY: number

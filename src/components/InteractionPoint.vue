@@ -12,9 +12,9 @@ const point = ref<HTMLDivElement>()
 
 function highlightRelatedHexes() {
     props.point.hexes.forEach(hex => {
-        console.log(hex);
+        // console.log(hex);
         
-        hex.setStyle('opacity: 0.5')
+        // hex.setStyle('opacity: 0.5')
     })
 
     // props.point.hexes[NeighbourHex.First]?.setStyle('background: green;')
@@ -24,7 +24,7 @@ function highlightRelatedHexes() {
 
 function unHighlightRelatedHexes() {
     props.point.hexes.forEach(hex => {
-        hex.setStyle('opacity: 1')
+        // hex.setStyle('opacity: 1')
     })
 }
 
@@ -32,7 +32,7 @@ const s = useCssModule()
 </script>
 
 <template>
-<div ref="point" @mouseenter="highlightRelatedHexes" @mouseleave="unHighlightRelatedHexes" :class='s.container'>
+<div ref="point"  @mouseenter="highlightRelatedHexes" @mouseleave="unHighlightRelatedHexes" :class='s.container'>
 
 </div>
 </template>

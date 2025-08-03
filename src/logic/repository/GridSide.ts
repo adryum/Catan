@@ -7,10 +7,12 @@ export class GridSide {
     coords: ITwoDCoords
     gamePiece: IGamePiece
 
-    hexes!: Hex[]
-    sidePoints!: GridPoint[]
+    hexes: Hex[]
+    sidePoints: GridPoint[]
     
     constructor(coords: ITwoDCoords) {
+        this.hexes = []
+        this.sidePoints = []
         this.coords = coords
         this.gamePiece = { 
                 piece: GamePiece.None, 
@@ -30,12 +32,14 @@ export class GridSide {
         return this.gamePiece
     }
 
-    setPoint(point: GridPoint) {
-        if (this.sidePoints.length <= 2) {
-            this.sidePoints.push(point)
-        } else {
-            console.error('Too many connecting points! ', point, this.sidePoints);
+    addHex(hex: Hex) {
+        if (hex && !this.hexes.includes(hex)) {  
+            this.hexes.push(hex)
         }
+    }
+
+    addPoint(point: GridPoint) {
+        this.sidePoints.push(point)
     }
 
     getOtherPoint(point: GridPoint): GridPoint {

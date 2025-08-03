@@ -9,7 +9,7 @@ import { createCssClass } from '@/logic/utils/Utils';
 import { h, onMounted, ref, render } from 'vue';
 
 var grid: HexGrid = new HexGrid(
-    { x: 3, y: 2 },
+    { x: 4, y: 4 },
     200
 )
 
@@ -17,33 +17,28 @@ const gameGrid = ref<HTMLDivElement>()
 const div = ref<HTMLDivElement>()
 
 function createPointCubes() {
-    grid.generateInteractablePointsCoords()
+    // grid.generateInteractablePointsCoords()
 }
 function createSideCubes() {
-    grid.generateInteractableSideCoords()
+    // grid.highlightHex(2, 0)
+    console.log(
+     grid.hexTiles);
 }
-
-onMounted(() => {
-  if (gameGrid.value) {
-    
-  }
-})
-
 </script>
 
 <template>
   <main class="container">
-    <div ref="gameGrid">
+    <div ref="gameGrid" class="gameGrid">
         <div ref="div" class="interactionGrid">
-            <InteractionPoint v-for="point in grid.gridPoints.value" :point="point" />
-            <!-- <InteractionSide v-for="group in grid.interactableGridSides.value" :group="group" /> -->
+            <InteractionPoint  v-for="point in grid.gridPoints.value" :point="point" />
+            <InteractionSide v-if="grid.gridSides.value.length > 0" v-for="group in grid.gridSides.value" :side="group" />
         </div>
-
+<!--  @mouseleave="grid.unHighLight(hex.keyInGrid.x, hex.keyInGrid.y)" @mouseenter="grid.highlightHex(hex.keyInGrid.x, hex.keyInGrid.y)" -->
         <div v-for="row in grid.hexTiles">
             <HexTile v-for="hex in row.arr" :point-info="[]" :hex="hex"/>
         </div>
     </div>
-    <button class="button" @click="createPointCubes"></button>
+    <button class="button" @click=""></button>
     <button class="button" @click="createSideCubes"></button>
   </main>
 </template>
@@ -55,6 +50,10 @@ onMounted(() => {
 .button
     width: 500px
     height: 50px
+
+.gameGrid 
+    position: relative
+    height: 1300px
 
 .interactionGrid
     position: relative
