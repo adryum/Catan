@@ -3,26 +3,24 @@ import GameGrid from '@/components/GameGrid.vue'
 import HexTile from '@/components/HexTile.vue';
 import InteractionPoint from '@/components/InteractionPoint.vue';
 import InteractionSide from '@/components/InteractionSide.vue';
-import { HexUI } from '@/logic/view/HexUI';
-import { HexGrid } from '@/logic/repository/HexGrid';
-import { createCssClass } from '@/logic/utils/Utils';
 import { h, onMounted, ref, render } from 'vue';
+import { GameManager } from '@/logic/repository/GameManager';
+import { GamePiece, PlayerTeam } from '@/logic/models/Enums';
+import type { PiecePositionOnHex } from '@/logic/repository/PiecePositionOnHex';
 
-var grid: HexGrid = new HexGrid(
+var gameManager: GameManager = new GameManager(
     { x: 4, y: 4 },
-    200
 )
 
 const gameGrid = ref<HTMLDivElement>()
 const div = ref<HTMLDivElement>()
 
-function createPointCubes() {
-    // grid.generateInteractablePointsCoords()
+function setSidePiece(partOfHex: PiecePositionOnHex) {
+    gameManager.setPiece(GamePiece.Wall, PlayerTeam.Red, partOfHex)
 }
-function createSideCubes() {
-    // grid.highlightHex(2, 0)
-    console.log(
-     grid.hexTiles);
+
+function setPointPiece(partOfHex: PiecePositionOnHex) {
+    gameManager.setPiece(GamePiece.Tower, PlayerTeam.Red, partOfHex)
 }
 </script>
 
@@ -30,16 +28,18 @@ function createSideCubes() {
   <main class="container">
     <div ref="gameGrid" class="gameGrid">
         <div ref="div" class="interactionGrid">
-            <InteractionPoint  v-for="point in grid.gridPoints.value" :point="point" />
-            <InteractionSide v-if="grid.gridSides.value.length > 0" v-for="group in grid.gridSides.value" :side="group" />
+            <InteractionPoint @click="setPointPiece(point)" v-for="point in gameManager.grid.gridPoints.value" :point="point" />
+            <InteractionSide @click="setSidePiece(side)" v-if="gameManager.grid.gridSides.value.length > 0" v-for="side in gameManager.grid.gridSides.value" :side="side" />
         </div>
 <!--  @mouseleave="grid.unHighLight(hex.keyInGrid.x, hex.keyInGrid.y)" @mouseenter="grid.highlightHex(hex.keyInGrid.x, hex.keyInGrid.y)" -->
-        <div v-for="row in grid.hexTiles">
+        <div v-for="row in gameManager.grid.hexTiles">
             <HexTile v-for="hex in row.arr" :point-info="[]" :hex="hex"/>
         </div>
     </div>
+    <div>Longest Road: {{ gameManager.longestRoad }}</div>
+    <div>Placed Pieces: {{ gameManager.placedPieces }}</div>
     <button class="button" @click=""></button>
-    <button class="button" @click="createSideCubes"></button>
+    <button class="button" @click=""></button>
   </main>
 </template>
 

@@ -29,7 +29,7 @@ const s = useCssModule()
 </script>
 
 <template>
-<div ref="point" @click="console.log(side)" @mouseenter="highlightRelatedHexes" @mouseleave="unHighlightRelatedHexes"  :class='s.container'>
+<div ref="point" :class='s.container'>
 
 </div>
 </template>

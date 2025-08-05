@@ -1,33 +1,18 @@
-import { validateLocaleAndSetLanguage } from "typescript"
 import { HexConnection, NeighbourHex,  HexSide, GamePiece, PlayerTeam } from "../models/Enums"
 import type { IGamePiece, IGridSideResponse, ITwoDCoords } from "../models/Interfaces"
 import { loopThroughEnums } from "../utils/Utils"
 import { GridSide } from "./GridSide"
 import type { Hex } from "./Hex"
-import type { HexGamePieceInfo } from "./HexSideInfo"
+import { PiecePositionOnHex } from "./PiecePositionOnHex"
 
-export class GridPoint {
+export class GridPoint extends PiecePositionOnHex {
     type: HexConnection
-    coords: ITwoDCoords
     hexes: Hex[]
-    gamePiece: IGamePiece
 
-    constructor(type: HexConnection, coords: ITwoDCoords) {
+    constructor(type: HexConnection, coords: ITwoDCoords, gamePiece: IGamePiece = { piece: GamePiece.None, team: PlayerTeam.None }) {
+        super(coords, gamePiece)
         this.type = type
-        this.coords = coords
         this.hexes = []
-        this.gamePiece = { 
-            piece: GamePiece.None, 
-            team: PlayerTeam.None 
-        }
-    }
-
-    setGamePiece(piece: IGamePiece) {
-        this.gamePiece = piece
-    }
-
-    getGamePiece() {
-        return this.gamePiece
     }
 
     createAdjacentSides() {

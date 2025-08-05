@@ -68,32 +68,6 @@ export class Hex {
         return this.sides
     }
 
-    setSideInfo(side: HexSide, piece: GamePiece = GamePiece.Wall) {
-        // this.sideInfo.set(side, new TileSideInfo(side, PlayerTeam.Blue, piece))
-
-        // console.log(this.sideInfo.get(side));
-    }
-
-    setPointInfo(point: HexPoint, piece: GamePiece) {
-        // this.pointInfo.set(point, new HexPointInfo(point, PlayerTeam.Blue, piece))
-
-        // console.log(this.pointInfo.get(point));
-    }
-
-    // instantiateSides() {
-    //     loopThroughEnums(HexSide, val => {
-    //         this.sides[val] = new GridSide(this.getAbsoluteSidesCoords(val))
-    //     })
-    // }
-
-    // setSides(givenSides: HexSides) {
-    //     loopThroughEnums(HexSide, val => {
-    //         if (givenSides[val]) {
-    //             this.sides[val] = givenSides[val]
-    //         }
-    //     })
-    // }
-
     setSide(side: HexSide, value: GridSide) {
         this.sides[side] = value
     }

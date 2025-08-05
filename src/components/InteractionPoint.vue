@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { GamePiece, NeighbourHex } from '@/logic/models/Enums';
 import type { GridPoint } from '@/logic/repository/GridPoint';
-import type { PointGroup } from '@/logic/view/PointGroup';
 import { onMounted, ref, useCssModule, type Ref } from 'vue';
 
 const props = defineProps<{
@@ -32,7 +30,7 @@ const s = useCssModule()
 </script>
 
 <template>
-<div ref="point"  @mouseenter="highlightRelatedHexes" @mouseleave="unHighlightRelatedHexes" :class='s.container'>
+<div ref="point"  :class='s.container'>
 
 </div>
 </template>

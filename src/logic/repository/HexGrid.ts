@@ -5,8 +5,6 @@ import { Hex } from "./Hex";
 import type { HexSides } from "../models/Types";
 import  { HexSide, HexPoint, HexConnection, NeighbourHex } from "../models/Enums";
 import type { ITwoDCoords, IHexBasePoint, IHexBaseSide, IIndentedRow } from "../models/Interfaces";
-import  { SideGroup } from "../view/SideGroup";
-import { PointGroup } from "../view/PointGroup";
 import type { GridSide } from "./GridSide";
 
 export class HexGrid {
@@ -84,7 +82,7 @@ export class HexGrid {
                
                     if (side && !this.gridSides.value.includes(side)) {
                         this.gridSides.value.push(side)
-                        console.log('side points', side.sidePoints);
+                        // console.log('side points', side.sidePoints);
 
                     }
 
@@ -337,20 +335,4 @@ export class HexGrid {
 
         return this.hexTiles[y].arr[x]
     }
-}
-
-function addPointToGridArray(pointGroups: PointGroup[], connection: IHexBasePoint) {
-    console.log(connection);
-    
-    if (pointGroups.some(e => e.tryAddPoint(connection))) return
-
-    pointGroups.push(new PointGroup(connection))
-}
-
-function addSideToGridArray(sideGroups: SideGroup[], connection: IHexBaseSide) {
-    console.log(connection);
-    
-    if (sideGroups.some(e => e.tryAddSide(connection))) return
-
-    sideGroups.push(new SideGroup(connection))
 }

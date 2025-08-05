@@ -1,6 +1,5 @@
 import type { GridSide } from "../repository/GridSide";
 import type { Hex } from "../repository/Hex";
-import type { HexUI } from "../view/HexUI";
 import type { GamePiece, HexPoint, HexSide, PlayerTeam } from "./Enums";
 
 export interface IHexBase {
@@ -42,4 +41,14 @@ export function containsPoint(arr: ITwoDCoords[], point: ITwoDCoords): boolean {
 export interface IGamePiece {
     piece: GamePiece,
     team: PlayerTeam,
+}
+
+export interface IPlayer {
+    name: string,
+    team: PlayerTeam
+}
+
+export interface ILongestRoad {
+    team: PlayerTeam
+    length: number
 }

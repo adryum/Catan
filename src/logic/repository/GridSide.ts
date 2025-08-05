@@ -1,35 +1,17 @@
-import { HexConnection, NeighbourHex,  HexSide, GamePiece, PlayerTeam } from "../models/Enums"
+import { GamePiece, PlayerTeam } from "../models/Enums"
 import type { IGamePiece, ITwoDCoords } from "../models/Interfaces"
 import type { GridPoint } from "./GridPoint"
 import type { Hex } from "./Hex"
+import { PiecePositionOnHex } from "./PiecePositionOnHex"
 
-export class GridSide {
-    coords: ITwoDCoords
-    gamePiece: IGamePiece
-
+export class GridSide extends PiecePositionOnHex {
     hexes: Hex[]
     sidePoints: GridPoint[]
     
-    constructor(coords: ITwoDCoords) {
+    constructor(coords: ITwoDCoords, gamePiece: IGamePiece = { piece: GamePiece.None, team: PlayerTeam.None }) {
+        super(coords, gamePiece)
         this.hexes = []
         this.sidePoints = []
-        this.coords = coords
-        this.gamePiece = { 
-                piece: GamePiece.None, 
-                team: PlayerTeam.None 
-        }
-    }
-
-    hasPiece(): boolean {
-        return this.gamePiece.piece != GamePiece.None
-    }
-
-    setGamePiece(piece: IGamePiece) {
-        this.gamePiece = piece
-    }
-
-    getGamePiece() {
-        return this.gamePiece
     }
 
     addHex(hex: Hex) {
