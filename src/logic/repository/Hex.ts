@@ -6,7 +6,7 @@ import { loopThroughEnums } from "../utils/Utils";
 import { HexGamePieceInfo } from "./HexSideInfo";
 import { GridSide } from "./GridSide";
 import type { GridPoint } from "./GridPoint";
-import { type Ref, ref } from "vue";
+import { reactive, ref, type Reactive, type Ref } from "vue";
 
 export class Hex {
     keyInGrid: ITwoDCoords;
@@ -19,7 +19,7 @@ export class Hex {
     leftTopPosition!: ITwoDCoords
     center!: ITwoDCoords;
 
-    sides: HexSides
+    sides: Reactive<HexSides>
     points: HexPoints
 
     parentElement!: HTMLDivElement
@@ -30,10 +30,17 @@ export class Hex {
         this.sizePx = sizePx
         this.outerRadiuss = sizePx / 2
         this.innerRadiuss =  this.outerRadiuss * Math.sqrt(3) / 2
-        this.sides = {}
+        this.sides = reactive({} as HexSides)
+        // this.addRefs()
         this.points = {} as HexPoints
         this.style = ref('')
     }
+
+    // addRefs() {
+    //     loopThroughEnums(HexSide, val => {
+    //         this.sides[val] = ref<GridSide>()
+    //     })
+    // }
 
     setStyle(style: string) {
         // WHY DOES THIS WORK??!??!
@@ -60,17 +67,24 @@ export class Hex {
         })
     }
 
+    setSide(side: HexSide, value: GridSide) {
+        console.log(this.sides);
+        console.log(this.sides[5]);
+
+        console.log('Accessing side:', side);
+        console.log('Sides keys:', Object.keys(this.sides));
+        console.log('Value:', this.sides[side]);
+
+        this.sides[side] = value
+    }
+
     getSide(side: HexSide): GridSide | undefined {
+        if(!this.sides[side]) return undefined
+
         return this.sides[side]
     }
 
-    getMySides(): HexSides {
-        return this.sides
-    }
-
-    setSide(side: HexSide, value: GridSide) {
-        this.sides[side] = value
-    }
+    
 
     setLeftTopPosition(coords: ITwoDCoords) {
         this.leftTopPosition = coords

@@ -126,47 +126,6 @@ export class HexGrid {
         })
     }
 
-    combineCommonHexSides() {
-        // faulty combination!!!
-        this.hexTiles.forEach((indentRow, y) => {
-            indentRow.arr.forEach((hex, x) => {
-                var hexSides: HexSides = {} as HexSides
-                var neighbour: Hex | null
-
-                neighbour = this.getNeighbouringHex(hex, HexSide.TopLeft)
-                if (neighbour) {
-                    hexSides[HexSide.TopLeft] = neighbour.getSide(HexSide.BottomRight)
-                }
-
-                neighbour = this.getNeighbouringHex(hex, HexSide.Left)
-                if (neighbour) {
-                    hexSides[HexSide.Left] = neighbour.getSide(HexSide.Right)
-                }
-
-                neighbour = this.getNeighbouringHex(hex, HexSide.BottomLeft)
-                if (neighbour) {
-                    hexSides[HexSide.BottomLeft] = neighbour.getSide(HexSide.TopRight)
-                }
-
-                // hex.setSides(hexSides)
-            })
-        })
-
-        // test
-        // const refSides: GridSide[] = []
-        // this.hexTiles.forEach((indentedRow) => {
-        //     indentedRow.arr.forEach((hex) => {
-        //         loopThroughEnums(HexSide, val => {
-        //             if (!refSides.includes(hex.sides[val])) {
-        //                 refSides.push(hex.sides[val])
-        //             }
-        //         })
-        //     })
-        // })
-
-        // console.log('All sides in grid:', refSides);
-    }
-
     createNewGridPoints() {
         // works
         const distanceBetweenPoints = 1

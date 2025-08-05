@@ -26,14 +26,14 @@ function setPointPiece(partOfHex: PiecePositionOnHex) {
 
 <template>
   <main class="container">
-    <div ref="gameGrid" class="gameGrid">
+    <div ref="gameGrid" class="gameGrid" v-if="gameManager.grid">
         <div ref="div" class="interactionGrid">
             <InteractionPoint @click="setPointPiece(point)" v-for="point in gameManager.grid.gridPoints.value" :point="point" />
             <InteractionSide @click="setSidePiece(side)" v-if="gameManager.grid.gridSides.value.length > 0" v-for="side in gameManager.grid.gridSides.value" :side="side" />
         </div>
 <!--  @mouseleave="grid.unHighLight(hex.keyInGrid.x, hex.keyInGrid.y)" @mouseenter="grid.highlightHex(hex.keyInGrid.x, hex.keyInGrid.y)" -->
         <div v-for="row in gameManager.grid.hexTiles">
-            <HexTile v-for="hex in row.arr" :point-info="[]" :hex="hex"/>
+            <HexTile v-for="hex in row.arr" :hex="hex"/>
         </div>
     </div>
     <div>Longest Road: {{ gameManager.longestRoad }}</div>
